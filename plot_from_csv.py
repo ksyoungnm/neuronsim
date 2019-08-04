@@ -35,6 +35,6 @@ def animate(i):
 
     return line,
 
-ani = animation.FuncAnimation(fig, animate, interval=1, init_func=init)
+ani = animation.FuncAnimation(fig, animate, interval=0.01, init_func=init)
 plt.show()
 
