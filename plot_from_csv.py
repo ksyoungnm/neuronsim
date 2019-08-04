@@ -35,10 +35,6 @@ def animate(i):
 
     return line,
 
-# ani = animation.FuncAnimation(fig, animate, interval=1, init_func=init)
-data = pd.read_csv('data.csv')
-t=data['time']
-v=data['voltage']
-plt.plot(t,v)
+ani = animation.FuncAnimation(fig, animate, interval=1, init_func=init)
 plt.show()
 
