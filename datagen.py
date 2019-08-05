@@ -2,6 +2,7 @@ import csv
 import neuron
 import time
 import conductance
+import HHconductance
 
 # set integration timestep (ms)
 TIME_STEP = 0.1
@@ -34,7 +35,7 @@ while True:
         csv_writer.writerow(info)
         print(t, v)
         t += TIME_STEP
-        v = n.integrate(TIME_STEP, i_ext=0.1)
+        v = n.integrate(TIME_STEP, i_ext=0.2)
 
         time.sleep(0.005)
 
