@@ -15,9 +15,9 @@ with open('data.csv', 'w') as csv_file:
     csv_writer.writeheader()
 
 n = neuron.Neuron(START_VOLTAGE)
-n.add_cond(conductance.NaConductance())
-n.add_cond(conductance.KConductance())
-n.add_cond(conductance.LConductance())
+n.add_cond(conductance.NaV())
+n.add_cond(conductance.KV())
+n.add_cond(conductance.LV())
 
 t = 0.0
 v = START_VOLTAGE
@@ -34,7 +34,7 @@ while True:
         csv_writer.writerow(info)
         print(t, v)
         t += TIME_STEP
-        v = n.integrate(TIME_STEP, i_ext=0.2)
+        v = n.integrate(TIME_STEP, i_ext=0.1)
 
         time.sleep(0.005)
 
