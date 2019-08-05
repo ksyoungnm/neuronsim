@@ -1,6 +1,7 @@
 import csv
 import neuron
 import time
+import conductance
 
 # set integration timestep (ms)
 TIME_STEP = 0.1
@@ -14,6 +15,10 @@ with open('data.csv', 'w') as csv_file:
     csv_writer.writeheader()
 
 n = neuron.Neuron(START_VOLTAGE)
+n.add_cond(conductance.NaConductance())
+n.add_cond(conductance.KConductance())
+n.add_cond(conductance.LConductance())
+
 t = 0.0
 v = START_VOLTAGE
 
