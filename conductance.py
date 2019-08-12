@@ -1,4 +1,5 @@
 import math
+from config import *
 
 class Conductance:
 
@@ -19,7 +20,7 @@ class Conductance:
 
 class NaV(Conductance):
 
-    def __init__(self, gbar=95.0174, e_rev=60):
+    def __init__(self, gbar=NaVconfig['gbar'], e_rev=NaVconfig['e_rev']):
         Conductance.__init__(self, gbar, e_rev)
         self.m = 0.0
         self.h = 0.0
@@ -42,7 +43,7 @@ class NaV(Conductance):
 
 class KV(Conductance):
  
-    def __init__(self, gbar=18.0006, e_rev=-90):
+    def __init__(self, gbar=KVconfig['gbar'], e_rev=KVconfig['e_rev']):
         Conductance.__init__(self, gbar, e_rev)
         self.n = 0.0
 
@@ -59,7 +60,7 @@ class KV(Conductance):
 
 class LV(Conductance):
 
-    def __init__(self, gbar=0.0187, e_rev=-50):
+    def __init__(self, gbar=LVconfig['gbar'], e_rev=LVconfig['e_rev']):
         Conductance.__init__(self, gbar, e_rev)
         self.g = self.gbar
 

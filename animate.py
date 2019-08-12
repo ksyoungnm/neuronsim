@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 
 def init():
     ax.set_ylim(-100, 60)
-    ax.set_xlim(0, 300)
+    ax.set_xlim(0, 500)
     del t[:]
     del v[:]
     line.set_data(t, v)
@@ -29,12 +29,15 @@ def animate(i):
     recent_t = t[len(t)-1] 
 
     if recent_t >= l_edge:
-        ax.set_xlim(xmin+1, xmax+1)
+        ax.set_xlim(xmin+0.5, xmax+0.5)
         ax.figure.canvas.draw()
     line.set_data(t, v)
 
     return line,
 
-ani = animation.FuncAnimation(fig, animate, interval=0.01, init_func=init)
+ani = animation.FuncAnimation(fig, animate,
+                                interval=1,
+                                init_func=init,
+                                blit=True)
 plt.show()
 
