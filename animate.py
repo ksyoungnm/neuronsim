@@ -1,43 +1,84 @@
-import numpy as np
-import pandas as pd
+# File: animate.py
+'''
+This module contains draws in real time the voltage trace from a given
+neuron. This is purely a visualization tool, and does not store any
+recorded data. To save generated data for later analysis see 
+
+#datagen.py#??????
+'''
+
+#bio libraries
+import neuron, conductance
+#drawing libraries
+from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-def init():
-    ax.set_ylim(-100, 60)
-    ax.set_xlim(0, 500)
-    del t[:]
-    del v[:]
-    line.set_data(t, v)
-    return line,
+#(current in nA, voltage in mV)
+EXT_CURRENT = 0.5
+START_VOLTAGE = -70
 
-fig, ax = plt.subplots()
-line, = ax.plot([], [], lw=2)
-ax.grid()
-t, v = [], []
+class PlotNeuron:
+    '''
+    This class is fed a matplotlib axis and a neuron to keep
+    track of, applies an external current and draws the resulting
+    voltage trace.
+    '''
+
+    def __init__(self, ax, neuron, extcurrent, maxt=200, dt=0.1):
+        self.neuron = neuron
+        self.extcurrent = extcurrent
+
+        self.ax = ax
+        self.dt = dt
+        self.maxt = maxt
+        self.tdata = [0]
+        self.vdata = [0]
+        self.line = Line2D(self.tdata, self.vdata)
+        self.ax.add_line(self.line)
+        self.ax.set_ylim(-100, 100)
+        self.ax.set_xlim(0, self.maxt)
+
+    def getdata(self):
+        '''
+        This generates the next voltage point for the neuron.
+        '''
+        yield self.neuron.integrate(self.dt, self.extcurrent)
+
+    def update(self, v):
+        '''
+        This just draws the result of the above method, also
+        changing the axes if we go over.
+        '''
+        lastt = self.tdata[-1]
+        if lastt > self.tdata[0] + self.maxt:
+            self.tdata = [self.tdata[-1]]
+            self.vdata = [self.vdata[-1]]
+            self.ax.set_xlim(self.tdata[0], self.tdata[0] + self.maxt)
+            self.ax.figure.canvas.draw()
+
+        t = self.tdata[-1] + self.dt
+        self.tdata.append(t)
+        self.vdata.append(v)
+        self.line.set_data(self.tdata, self.vdata)
+        return self.line,
 
 
-def animate(i):
-    # update the data
-    data = pd.read_csv('data.csv')
-    t = data['time']
-    v = data['voltage']
+def main(startvoltage, extcurrent):
+    nn = neuron.Neuron(startvoltage)
+    nn.add_cond(conductance.NaV())
+    nn.add_cond(conductance.KV())
+    nn.add_cond(conductance.LV())
 
+    fig, ax = plt.subplots()
+    scope = PlotNeuron(ax,nn,extcurrent)
 
-    xmin, xmax = ax.get_xlim()
-    l_edge = xmax-50
-    recent_t = t[len(t)-1] 
+    
+    ani = animation.FuncAnimation(fig, scope.update, scope.getdata, interval=10,
+                                  blit=True)
 
-    if recent_t >= l_edge:
-        ax.set_xlim(xmin+0.5, xmax+0.5)
-        ax.figure.canvas.draw()
-    line.set_data(t, v)
+    plt.show()
 
-    return line,
-
-ani = animation.FuncAnimation(fig, animate,
-                                interval=1,
-                                init_func=init,
-                                blit=True)
-plt.show()
+if __name__ == '__main__':
+    main(START_VOLTAGE,EXT_CURRENT)
 
