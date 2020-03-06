@@ -1,87 +1,37 @@
-import csv
-import neuron
-import time
-import conductance
-import HHconductance
-import config
+# File: datagen.py
+'''
+This module generates and stores data from the neuron model
+for later analysis. For real-time visualization see animate.py
 
-# set integration timestep (ms)
-TIME_STEP = config.neuronConfig['time_step']
-# set starting voltage (mV)
-START_VOLTAGE = config.neuronConfig['starting_v']
+'''
 
-fieldnames = ["time","voltage"]
+import neuron, conductance
+import numpy,csv
 
-with open('data.csv', 'w') as csv_file:
-    csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-    csv_writer.writeheader()
+OUTFILE = 'data/out.csv'
+#(voltage in mV, current in nA, time in ms)
+START_VOLTAGE = -70
+EXT_CURRENT = 0.5
+TIME_STEP = 0.1
+MAX_TIME = 10
 
-n = neuron.Neuron(START_VOLTAGE)
-n.add_cond(conductance.NaV())
-n.add_cond(conductance.KV())
-n.add_cond(conductance.LV())
 
-t = 0.0
-v = START_VOLTAGE
+def main():
+    with open(OUTFILE,'w',newline='') as csvfile:
+        datawriter = csv.writer(csvfile)
+        datawriter.writerow(['Time','Voltage'])
 
-if config.generalconfig['mode'] == 'animate':
-    import tkinter as tk
-    root = tk.Tk()
-    scale = tk.Scale(root, from_=1.0, to_=-1.0, resolution=0.1)
-    scale.pack()
+        nn = neuron.Neuron(START_VOLTAGE)
+        nn.add_cond(conductance.NaV())
+        nn.add_cond(conductance.KV())
+        nn.add_cond(conductance.LV())
 
-    def write_val():
-        global t,v,n
-        with open('data.csv','a') as csv_file:
-            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-    
-            info = {
-                "time": t,
-                "voltage": v
-            }
-            csv_writer.writerow(info)
-            print(t, v)
+        t = 0
+        while t < MAX_TIME:
+            v = nn.integrate(TIME_STEP,EXT_CURRENT)
+            datawriter.writerow([t,v])
             t += TIME_STEP
-            v = n.integrate(TIME_STEP, i_ext=scale.get())
-    
-        root.after(15, write_val)
-    
-    root.after(0,write_val)
-    root.mainloop()
 
-elif config.generalconfig['mode'] == 'risecurrent':
-    i = 0.0
-    while t < 1000:
-    
-        with open('data.csv', 'a') as csv_file:
-            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-    
-            info = {
-                "time": t,
-                "voltage": v
-            }
-            csv_writer.writerow(info)
-            print(t, v)
-            t += TIME_STEP
-            i += 0.0001
-            v = n.integrate(TIME_STEP, i)
-
-
-    
-else:
-    while t < 1000:
-    
-        with open('data.csv', 'a') as csv_file:
-            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-    
-            info = {
-                "time": t,
-                "voltage": v
-            }
-            csv_writer.writerow(info)
-            print(t, v)
-            t += TIME_STEP
-            v = n.integrate(TIME_STEP, config.neuronConfig['i_ext'])
-
-    
+if __name__ == '__main__':
+    main()
 

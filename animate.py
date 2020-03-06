@@ -1,10 +1,10 @@
 # File: animate.py
 '''
-This module contains draws in real time the voltage trace from a given
-neuron. This is purely a visualization tool, and does not store any
+This module draws in real time the voltage trace from a given neuron.
+This is purely a visualization tool, and does not store any
 recorded data. To save generated data for later analysis see 
+datagen.py
 
-#datagen.py#??????
 '''
 
 #bio libraries
@@ -14,9 +14,11 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-#(current in nA, voltage in mV)
-EXT_CURRENT = 0.5
+#(voltage in mV, current in nA, time in ms)
 START_VOLTAGE = -70
+EXT_CURRENT = 0.5
+TIME_STEP = 0.1
+
 
 class PlotNeuron:
     '''
@@ -25,9 +27,8 @@ class PlotNeuron:
     voltage trace.
     '''
 
-    def __init__(self, ax, neuron, extcurrent, maxt=200, dt=0.1):
+    def __init__(self, ax, neuron, maxt=200, dt=TIME_STEP):
         self.neuron = neuron
-        self.extcurrent = extcurrent
 
         self.ax = ax
         self.dt = dt
@@ -43,7 +44,7 @@ class PlotNeuron:
         '''
         This generates the next voltage point for the neuron.
         '''
-        yield self.neuron.integrate(self.dt, self.extcurrent)
+        yield self.neuron.integrate(self.dt, EXT_CURRENT)
 
     def update(self, v):
         '''
@@ -64,14 +65,14 @@ class PlotNeuron:
         return self.line,
 
 
-def main(startvoltage, extcurrent):
-    nn = neuron.Neuron(startvoltage)
+def main():
+    nn = neuron.Neuron(START_VOLTAGE)
     nn.add_cond(conductance.NaV())
     nn.add_cond(conductance.KV())
     nn.add_cond(conductance.LV())
 
     fig, ax = plt.subplots()
-    scope = PlotNeuron(ax,nn,extcurrent)
+    scope = PlotNeuron(ax,nn)
 
     
     ani = animation.FuncAnimation(fig, scope.update, scope.getdata, interval=10,
@@ -80,5 +81,5 @@ def main(startvoltage, extcurrent):
     plt.show()
 
 if __name__ == '__main__':
-    main(START_VOLTAGE,EXT_CURRENT)
+    main()
 
