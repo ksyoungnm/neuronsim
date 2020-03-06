@@ -8,7 +8,7 @@ generalconfig = {
 neuronConfig = {
     "time_step": 0.1,
     "starting_v": -70,
-    "i_ext": 0.0
+    "i_ext": 0.25
 }
 
 

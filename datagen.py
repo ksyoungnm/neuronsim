@@ -48,6 +48,25 @@ if config.generalconfig['mode'] == 'animate':
     
     root.after(0,write_val)
     root.mainloop()
+
+elif config.generalconfig['mode'] == 'risecurrent':
+    i = 0.0
+    while t < 1000:
+    
+        with open('data.csv', 'a') as csv_file:
+            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    
+            info = {
+                "time": t,
+                "voltage": v
+            }
+            csv_writer.writerow(info)
+            print(t, v)
+            t += TIME_STEP
+            i += 0.0001
+            v = n.integrate(TIME_STEP, i)
+
+
     
 else:
     while t < 1000:
@@ -63,5 +82,6 @@ else:
             print(t, v)
             t += TIME_STEP
             v = n.integrate(TIME_STEP, config.neuronConfig['i_ext'])
+
     
 
