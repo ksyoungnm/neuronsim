@@ -1,5 +1,9 @@
 import math
-from config import *
+import json
+
+CONFIGFILE = 'config.json'
+with open(CONFIGFILE) as configfile:
+    config = json.load(configfile)
 
 class Conductance:
 
@@ -20,8 +24,10 @@ class Conductance:
 
 class NaV(Conductance):
 
-    def __init__(self, gbar=NaVconfig['gbar'], e_rev=NaVconfig['e_rev']):
-        Conductance.__init__(self, gbar, e_rev)
+    def __init__(self, gbar  = config['condConfig']['NaV']['gbar'],
+                       e_rev = config['condConfig']['NaV']['e_rev']):
+
+        super().__init__(gbar, e_rev)
         self.m = 0.0
         self.h = 0.0
 
@@ -42,9 +48,11 @@ class NaV(Conductance):
 
 
 class KV(Conductance):
- 
-    def __init__(self, gbar=KVconfig['gbar'], e_rev=KVconfig['e_rev']):
-        Conductance.__init__(self, gbar, e_rev)
+
+    def __init__(self, gbar  = config['condConfig']['KV']['gbar'],
+                       e_rev = config['condConfig']['KV']['e_rev']):
+
+        super().__init__(gbar, e_rev)
         self.n = 0.0
 
     def integrate(self, v, dt):
@@ -60,8 +68,10 @@ class KV(Conductance):
 
 class LV(Conductance):
 
-    def __init__(self, gbar=LVconfig['gbar'], e_rev=LVconfig['e_rev']):
-        Conductance.__init__(self, gbar, e_rev)
+    def __init__(self, gbar  = config['condConfig']['LV']['gbar'],
+                       e_rev = config['condConfig']['LV']['e_rev']):
+
+        super().__init__(gbar, e_rev)
         self.g = self.gbar
 
     def integrate(self, v, dt):

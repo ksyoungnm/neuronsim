@@ -1,0 +1,1 @@
+{"neuronConfig": {"start_v": -70, "ext_current": 0.5, "time_step": 0.1}, "condConfig": {"NaV": {"e_rev": 60, "gbar": 95.0174}, "KV": {"e_rev": -90, "gbar": 18.0006}, "LV": {"e_rev": -50, "gbar": 0.0187}}}

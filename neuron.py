@@ -26,11 +26,3 @@ class Neuron:
 
         return self._voltage
 
-
-
-
-
-
-
-
-

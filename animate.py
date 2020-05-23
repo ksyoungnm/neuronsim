@@ -1,24 +1,22 @@
-# File: animate.py
+# File: interactive.py
 '''
-This module draws in real time the voltage trace from a given neuron.
-This is purely a visualization tool, and does not store any
-recorded data. To save generated data for later analysis see 
-datagen.py
-
+This module draws in real time the voltage trace from a simulated neuron.
+Current can be applied using the slider at the bottom. This module doesn't
+save any data, just meant to be a visualization tool.
 '''
 
 #bio libraries
 import neuron, conductance
+#config stuff
+import json
+CONFIGFILE = 'config.json'
+with open(CONFIGFILE) as configfile:
+        CONFIG = json.load(configfile)
 #drawing libraries
 from matplotlib.lines import Line2D
+from matplotlib.widgets import Slider
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-
-#(voltage in mV, current in nA, time in ms)
-START_VOLTAGE = -70
-EXT_CURRENT = 0.5
-TIME_STEP = 0.1
-
 
 class PlotNeuron:
     '''
@@ -27,8 +25,9 @@ class PlotNeuron:
     voltage trace.
     '''
 
-    def __init__(self, ax, neuron, maxt=200, dt=TIME_STEP):
+    def __init__(self, ax, neuron, ext_current=0, maxt=200, dt=0.1):
         self.neuron = neuron
+        self.ext_current = ext_current
 
         self.ax = ax
         self.dt = dt
@@ -40,11 +39,14 @@ class PlotNeuron:
         self.ax.set_ylim(-100, 100)
         self.ax.set_xlim(0, self.maxt)
 
+    def setcurrent(self, current):
+        self.ext_current = current
+
     def getdata(self):
         '''
         This generates the next voltage point for the neuron.
         '''
-        yield self.neuron.integrate(self.dt, EXT_CURRENT)
+        yield self.neuron.integrate(self.dt, self.ext_current)
 
     def update(self, v):
         '''
@@ -64,22 +66,32 @@ class PlotNeuron:
         self.line.set_data(self.tdata, self.vdata)
         return self.line,
 
-
 def main():
-    nn = neuron.Neuron(START_VOLTAGE)
+
+    start_v     = CONFIG['neuronConfig']['start_v']
+    ext_current = CONFIG['neuronConfig']['ext_current']
+    time_step   = CONFIG['neuronConfig']['time_step']
+
+    nn = neuron.Neuron(start_v)
     nn.add_cond(conductance.NaV())
     nn.add_cond(conductance.KV())
     nn.add_cond(conductance.LV())
 
-    fig, ax = plt.subplots()
-    scope = PlotNeuron(ax,nn)
+    fig, (ax, curr) = plt.subplots(2,1, gridspec_kw={'height_ratios':[11,1]})
+    scope = PlotNeuron(ax,nn,
+                       ext_current=ext_current,
+                       dt=time_step)
 
-    
-    ani = animation.FuncAnimation(fig, scope.update, scope.getdata, interval=10,
-                                  blit=True)
+    ax.set_xlabel('Time (ms)')
+    ax.set_ylabel('Voltage (mV)')
+
+    scurr = Slider(curr, 'Applied Current (nA)', -1, 5, valinit=1, valstep=0.1)
+    scurr.on_changed(scope.setcurrent)
+
+    ani = animation.FuncAnimation(fig, scope.update, scope.getdata, interval=5, blit=True)
+    fig.tight_layout()
 
     plt.show()
 
 if __name__ == '__main__':
     main()
-
