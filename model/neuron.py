@@ -1,3 +1,12 @@
+# File: neuron.py
+'''
+This module represents the neuron itself. Basically all its
+doing is keeping track of the different conductances and
+using them all together to calculate the next voltage step.
+Certainly more detail can be added here, physical characteristics,
+and some implementation to attatch neurons to each other?
+Still WIP.
+'''
 import math
 
 class Neuron:

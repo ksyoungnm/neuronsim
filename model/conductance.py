@@ -1,7 +1,28 @@
-import math
-import json
+# File: conductance.py
+'''
+This module contains implementations of the different kinds of
+conductance models. Parameters were found from:
 
-CONFIGFILE = 'config.json'
+O’Leary, T., & Marder, E. (2016). Temperature-Robust Neural 
+Function from Activity-Dependent Ion Channel Regulation. 
+Current Biology, 26(21), 2935–2941. 
+https://doi.org/10.1016/j.cub.2016.08.061.
+
+To define a conductance, we have to provide a few things: 
+a gbar parameter (think how many ion channels per unit membrane),
+and a reversal potential e_rev (voltage at which there is no
+net flow of a certain ion species across a membrane). Additionally,
+the different ion channels react with different current and time
+dynamics, so we need to provide the equations by which these
+things happen. Therefore ovexrwriting the integrate method is also
+required.
+'''
+import math
+
+# config stuff
+import json
+from os import path
+CONFIGFILE = path.join(path.dirname(__file__),'config.json')
 with open(CONFIGFILE) as configfile:
     config = json.load(configfile)
 
@@ -19,7 +40,7 @@ class Conductance:
         return self.g*self.e_rev
 
     def integrate(self, v, dt):
-        raise Exception("this method needs to be overwritten")
+        raise Exception("Overwrite this.")
 
 
 class NaV(Conductance):

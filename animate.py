@@ -1,4 +1,4 @@
-# File: interactive.py
+# File: animate.py
 '''
 This module draws in real time the voltage trace from a simulated neuron.
 Current can be applied using the slider at the bottom. This module doesn't
@@ -6,10 +6,13 @@ save any data, just meant to be a visualization tool.
 '''
 
 #bio libraries
-import neuron, conductance
+import model.neuron
+import model.conductance
+# import model.HHconductance
+
 #config stuff
 import json
-CONFIGFILE = 'config.json'
+CONFIGFILE = 'model/config.json'
 with open(CONFIGFILE) as configfile:
         CONFIG = json.load(configfile)
 #drawing libraries
@@ -67,15 +70,14 @@ class PlotNeuron:
         return self.line,
 
 def main():
-
     start_v     = CONFIG['neuronConfig']['start_v']
     ext_current = CONFIG['neuronConfig']['ext_current']
     time_step   = CONFIG['neuronConfig']['time_step']
 
-    nn = neuron.Neuron(start_v)
-    nn.add_cond(conductance.NaV())
-    nn.add_cond(conductance.KV())
-    nn.add_cond(conductance.LV())
+    nn = model.neuron.Neuron(start_v)
+    nn.add_cond(model.conductance.NaV())
+    nn.add_cond(model.conductance.KV())
+    nn.add_cond(model.conductance.LV())
 
     fig, (ax, curr) = plt.subplots(2,1, gridspec_kw={'height_ratios':[11,1]})
     scope = PlotNeuron(ax,nn,
