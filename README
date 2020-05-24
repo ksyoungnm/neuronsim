@@ -1,0 +1,5 @@
+# neuronsim
+
+A small conductance based neuron simulator. About as barebones as they come. Mostly a project for my own practice/education. Built to reinforce some biophysical concepts. I've provided a script in the 'animate.py' file that plots the voltage changing over time, which is kind of neat to watch.
+
+Expansion options include adding fancier conductances (Calcium for instance) and the ability to chain several neurons together.

@@ -8,13 +8,13 @@ save any data, just meant to be a visualization tool.
 #bio libraries
 import model.neuron
 import model.conductance
-# import model.HHconductance
 
 #config stuff
 import json
 CONFIGFILE = 'model/config.json'
 with open(CONFIGFILE) as configfile:
         CONFIG = json.load(configfile)
+        
 #drawing libraries
 from matplotlib.lines import Line2D
 from matplotlib.widgets import Slider
